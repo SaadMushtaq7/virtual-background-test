@@ -1,0 +1,62 @@
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.blurred-img-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.upload-image{
+  width: 600px;
+  height: 450px;
+  margin-top: 50px;
+  margin-left: 31%;
+  border-radius: 20px;
+  box-shadow: 1px 1px 1px 1px;
+  
+}
+
+.blur-btn{
+  width: 150px;
+  height: 75px;
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  background-color: #20dbc2;
+  color: white;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin: 10px 0;
+  margin-right: 15px;
+  transition: all 0.5s;
+  align-items: center;
+}
+
+.blur-btn:hover{
+  background-color: #00bfa6;
+  color: #fff;
+}
+
+.change-image-container{
+  margin-top: 20px;
+  margin-left: -600px;
+}
+
+.remove-image-background{
+  /* position: absolute; */
+  width: 300px;
+  height: 250px;
+  z-index: 2000;
+}
+
+.background-image{
+  /* position: absolute; */
+  width: 600px;
+  height: 400px;
+}
