@@ -2,81 +2,84 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-converter";
 import "@tensorflow/tfjs-backend-webgl";
-import * as bodyPix from "@tensorflow-models/body-pix";
-import Webcam from "react-webcam";
+import { SelfieSegmentation } from "@mediapipe/selfie_segmentation";
+import { Camera } from "@mediapipe/camera_utils";
 import background from "../../background.jpg";
 import natureBackground from "../../natureBackground.jpg";
 import "../../App.css";
 
 const ChangeVideoBackground = () => {
-  const webcamRef = useRef<any>();
+  const inputVideoRef = useRef<any>();
   const canvasRef = useRef<any>();
+  const contextRef = useRef<any>();
 
-  const [backgroundImage, setBackgroundImage] = useState<string>(background);
-  const [videoProcessing, setvideoProcessing] = useState<boolean>();
+  const [backgroundImage, setBackgroundImage] = useState<any>(background);
 
-  const removeBackground = async () => {
-    if (
-      typeof webcamRef.current !== "undefined" &&
-      webcamRef.current !== null &&
-      webcamRef.current.video.readyState === 4
-    ) {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
+  const onResults = useCallback((results: any) => {
+    contextRef.current.save();
+    contextRef.current.clearRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
 
-      setvideoProcessing(false);
+    contextRef.current.filter = "none";
+    contextRef.current.globalCompositeOperation = "source-over";
+    contextRef.current.drawImage(
+      results.segmentationMask,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
 
-      const net = await bodyPix.load({
-        architecture: "MobileNetV1",
-        outputStride: 16,
-        multiplier: 0.75,
-        quantBytes: 2,
-      });
+    contextRef.current.globalCompositeOperation = "source-in";
+    contextRef.current.drawImage(
+      results.image,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
 
-      const { data: map } = await net.segmentPerson(canvas, {
-        internalResolution: "medium",
-        segmentationThreshold: 0.7,
-        scoreThreshold: 0.7,
-      });
-
-      const { data: imgData } = ctx.getImageData(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-
-      const newImg = ctx.createImageData(canvas.width, canvas.height);
-      const newImgData = newImg.data;
-
-      for (let i = 0; i < map.length; i++) {
-        //The data array stores four values for each pixel
-        const [r, g, b, a] = [
-          imgData[i * 4],
-          imgData[i * 4 + 1],
-          imgData[i * 4 + 2],
-          imgData[i * 4 + 3],
-        ];
-        [
-          newImgData[i * 4],
-          newImgData[i * 4 + 1],
-          newImgData[i * 4 + 2],
-          newImgData[i * 4 + 3],
-        ] = !map[i] ? [255, 255, 255, 0] : [r, g, b, a];
-      }
-
-      ctx.putImageData(webcamRef.current, 0, 0, canvas.width, canvas.height);
-    }
-  };
-  const runBodySegment = useCallback(async () => {
-    /*setInterval(() => {
-      removeBackground();
-    }, 0.00001);*/
+    contextRef.current.filter = "none";
+    contextRef.current.globalCompositeOperation = "destination-over";
+    contextRef.current.drawImage(results.image, 0, 0, 0, 0);
+    inputVideoRef.current.hidden = true;
+    contextRef.current.restore();
   }, []);
 
   useEffect(() => {
-    runBodySegment();
-  }, [runBodySegment]);
+    contextRef.current = canvasRef.current.getContext("2d");
+    const constraints = {
+      video: { width: { min: 400 }, height: { min: 380 } },
+    };
+    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+      inputVideoRef.current.srcObject = stream;
+    });
+
+    const selfieSegmentation = new SelfieSegmentation({
+      locateFile: (file) =>
+        `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`,
+    });
+
+    selfieSegmentation.setOptions({
+      modelSelection: 1,
+    });
+
+    selfieSegmentation.onResults(onResults);
+
+    const camera = new Camera(inputVideoRef.current, {
+      onFrame: async () => {
+        await selfieSegmentation.send({ image: inputVideoRef.current });
+      },
+      width: 400,
+      height: 380,
+    });
+
+    camera.start();
+  }, [onResults]);
 
   return (
     <div className="change-video-backgroung-container">
@@ -87,8 +90,8 @@ const ChangeVideoBackground = () => {
         alt="background"
       />
       <div className="change-video-background-webcam">
-        <Webcam
-          ref={webcamRef}
+        <video
+          ref={inputVideoRef}
           style={{
             position: "absolute",
             marginLeft: "auto",

@@ -1,90 +1,125 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-converter";
 import "@tensorflow/tfjs-backend-webgl";
-import * as bodyPix from "@tensorflow-models/body-pix";
-import Webcam from "react-webcam";
+import { SelfieSegmentation } from "@mediapipe/selfie_segmentation";
+import { Camera } from "@mediapipe/camera_utils";
 import "../../App.css";
 
 const BlurVideoBackground = () => {
-  const webcamRef = useRef<any>();
+  const inputVideoRef = useRef<any>();
   const canvasRef = useRef<any>();
-
-  const detect = async (net: any) => {
-    if (
-      typeof webcamRef.current !== "undefined" &&
-      webcamRef.current !== null &&
-      webcamRef.current.video.readyState === 4
-    ) {
-      const video = webcamRef.current.video;
-
-      const videoHeight = video.height;
-      const videoWidth = video.width;
-
-      canvasRef.current.width = videoWidth;
-      canvasRef.current.height = videoHeight;
-
-      const segmentation = await net.segmentPerson(video, {
-        segmentationThreshold: 0.7,
-        internalResolution: "full",
-      });
-      bodyPix.drawBokehEffect(
-        canvasRef.current,
-        video,
-        segmentation,
-        26,
-        2,
-        false
-      );
-    }
-  };
-  const runBodySegment = useCallback(async () => {
-    const net = await bodyPix.load();
-    console.log("bodypix model loaded");
-    setInterval(() => {
-      detect(net);
-    }, 0.0001);
-  }, []);
+  const contextRef = useRef<any>();
 
   useEffect(() => {
-    runBodySegment();
-  }, [runBodySegment]);
+    contextRef.current = canvasRef.current.getContext("2d");
+    const constraints = {
+      video: { width: { min: 400 }, height: { min: 380 } },
+    };
+    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+      inputVideoRef.current.srcObject = stream;
+    });
+
+    const selfieSegmentation = new SelfieSegmentation({
+      locateFile: (file) =>
+        `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`,
+    });
+
+    selfieSegmentation.setOptions({
+      modelSelection: 1,
+    });
+
+    selfieSegmentation.onResults(onResults);
+
+    const camera = new Camera(inputVideoRef.current, {
+      onFrame: async () => {
+        await selfieSegmentation.send({ image: inputVideoRef.current });
+      },
+      width: 400,
+      height: 380,
+    });
+
+    camera.start();
+  }, []);
+
+  const onResults = (results: any) => {
+    contextRef.current.save();
+    contextRef.current.clearRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+    contextRef.current.filter = "none";
+    contextRef.current.globalCompositeOperation = "source-over";
+
+    contextRef.current.drawImage(
+      results.segmentationMask,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+
+    contextRef.current.globalCompositeOperation = "source-in";
+    contextRef.current.drawImage(
+      results.image,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+    contextRef.current.filter = "blur(10px)";
+    contextRef.current.globalCompositeOperation = "destination-over";
+    contextRef.current.drawImage(
+      results.image,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+
+    contextRef.current.restore();
+  };
 
   return (
-    <div>
-      <h1>Blur Video Background</h1>
-      <Webcam
-        ref={webcamRef}
-        style={{
-          position: "absolute",
-          marginLeft: "auto",
-          marginRight: "auto",
-          left: 0,
-          right: 0,
-          textAlign: "center",
-          zIndex: 9,
-          width: 640,
-          height: 480,
-        }}
-        width={640}
-        height={480}
-      />
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: "absolute",
-          marginLeft: "auto",
-          marginRight: "auto",
-          left: 0,
-          right: 0,
-          textAlign: "center",
-          zIndex: 9,
-          width: 640,
-          height: 480,
-        }}
-        width={640}
-        height={480}
-      />
+    <div className="change-video-backgroung-container">
+      <h1 className="text-center">Blur Video Background</h1>
+
+      <div className="change-video-background-webcam">
+        <video
+          ref={inputVideoRef}
+          style={{
+            position: "absolute",
+            marginLeft: "auto",
+            marginRight: "auto",
+            left: 0,
+            right: 0,
+            textAlign: "center",
+            zIndex: 9,
+            width: 400,
+            height: 380,
+          }}
+          width={400}
+          height={300}
+        />
+        <canvas
+          ref={canvasRef}
+          style={{
+            position: "absolute",
+            marginLeft: "auto",
+            marginRight: "auto",
+            left: 0,
+            right: 0,
+            textAlign: "center",
+            zIndex: 9,
+            width: 400,
+            height: 380,
+          }}
+          width={400}
+          height={300}
+        />
+      </div>
     </div>
   );
 };

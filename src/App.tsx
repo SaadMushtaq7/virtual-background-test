@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import BlurImageBackground from "./components/image/BlurImageBackground";
 import ChangeImageBackground from "./components/image/ChangeImageBackground";
+import Practice2 from "./components/Practice2";
 import BlurVideoBackground from "./components/video/BlurVideoBackground";
 import ChangeVideoBackground from "./components/video/ChangeVideoBackground";
 function App() {
@@ -9,7 +10,8 @@ function App() {
   const [blurCheck, setBlurCheck] = useState<boolean>(true);
   return (
     <div className="App">
-      {videoCheck ? (
+      <Practice2 />
+      {/* {videoCheck ? (
         <button className="blur-btn" onClick={() => setVideoCheck(false)}>
           Image
         </button>
@@ -31,7 +33,7 @@ function App() {
         <>{blurCheck ? <BlurVideoBackground /> : <ChangeVideoBackground />}</>
       ) : (
         <>{blurCheck ? <BlurImageBackground /> : <ChangeImageBackground />}</>
-      )}
+      )} */}
     </div>
   );
 }
