@@ -32,8 +32,8 @@ const BlurVideoBackground = () => {
         canvasRef.current,
         video,
         segmentation,
-        20,
-        10,
+        26,
+        2,
         false
       );
     }
@@ -43,7 +43,7 @@ const BlurVideoBackground = () => {
     console.log("bodypix model loaded");
     setInterval(() => {
       detect(net);
-    }, 0.01);
+    }, 0.0001);
   }, []);
 
   useEffect(() => {
@@ -52,6 +52,7 @@ const BlurVideoBackground = () => {
 
   return (
     <div>
+      <h1>Blur Video Background</h1>
       <Webcam
         ref={webcamRef}
         style={{

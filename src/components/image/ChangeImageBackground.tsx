@@ -4,12 +4,17 @@ import "@tensorflow/tfjs-converter";
 import "@tensorflow/tfjs-backend-webgl";
 import * as bodyPix from "@tensorflow-models/body-pix";
 import background from "../../background.jpg";
+import natureBackground from "../../natureBackground.jpg";
 import "../../App.css";
 
 const ChangeImageBackground = () => {
   const [image, setImage] = useState<any>();
 
+  const [imageProcessing, setImageProcessing] = useState<boolean>();
+
   const canvasRef = useRef<any>();
+
+  const [backgroundImage, setBackgroundImage] = useState<string>(background);
 
   const handleImageChange = (e: any) => {
     setImage(URL.createObjectURL(e.target.files[0]));
@@ -19,6 +24,7 @@ const ChangeImageBackground = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
+    setImageProcessing(false);
     const net = await bodyPix.load({
       architecture: "MobileNetV1",
       outputStride: 16,
@@ -28,6 +34,8 @@ const ChangeImageBackground = () => {
 
     const { data: map } = await net.segmentPerson(canvas, {
       internalResolution: "medium",
+      segmentationThreshold: 0.7,
+      scoreThreshold: 0.7,
     });
 
     const { data: imgData } = ctx.getImageData(
@@ -36,10 +44,12 @@ const ChangeImageBackground = () => {
       canvas.width,
       canvas.height
     );
+
     const newImg = ctx.createImageData(canvas.width, canvas.height);
     const newImgData = newImg.data;
 
     for (let i = 0; i < map.length; i++) {
+      //The data array stores four values for each pixel
       const [r, g, b, a] = [
         imgData[i * 4],
         imgData[i * 4 + 1],
@@ -55,13 +65,17 @@ const ChangeImageBackground = () => {
     }
 
     ctx.putImageData(newImg, 0, 0);
+
+    setImageProcessing(true);
   };
 
-  const loadAndChangeBG = useCallback(async (src: string) => {
+  const loadAndChangeBG = useCallback((src: string) => {
     const img = new Image();
     img.crossOrigin = "";
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
+
     img.addEventListener("load", () => {
       canvas.width = img.width;
       canvas.height = img.height;
@@ -69,12 +83,14 @@ const ChangeImageBackground = () => {
 
       removeBackground();
     });
+
     img.src = src;
   }, []);
 
   useEffect(() => {
-    if (image) loadAndChangeBG(image);
+    loadAndChangeBG(image);
   }, [loadAndChangeBG, image]);
+
   return (
     <div className="container">
       <h1 className="text-center">Change Image Background</h1>
@@ -88,14 +104,33 @@ const ChangeImageBackground = () => {
           onChange={handleImageChange}
         />
       </div>
-      <img className="background-image" src={background} alt="" />
-      <canvas
-        ref={canvasRef}
-        className="remove-image-background"
-        id="canvas"
-        width="460px"
-        height="150px"
-      />
+      <div className="change-image-container">
+        <img className="background-image" src={backgroundImage} alt="" />
+        <canvas
+          ref={canvasRef}
+          className={`${
+            imageProcessing
+              ? "remove-image-background"
+              : "hide-remove-background-image"
+          }`}
+          id="canvas"
+        />
+      </div>
+
+      <div className="image-options-row">
+        <div
+          className="column-option"
+          onClick={() => setBackgroundImage(background)}
+        >
+          <img src={background} alt="city wall" style={{ width: "100%" }} />
+        </div>
+        <div
+          className="column-option"
+          onClick={() => setBackgroundImage(natureBackground)}
+        >
+          <img src={natureBackground} alt="nature" style={{ width: "100%" }} />
+        </div>
+      </div>
     </div>
   );
 };
