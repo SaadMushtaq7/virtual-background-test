@@ -9,8 +9,7 @@ function App() {
   const [blurCheck, setBlurCheck] = useState<boolean>(true);
   return (
     <div className="App">
-      <ChangeVideoBackground />
-      {/* {videoCheck ? (
+      {videoCheck ? (
         <button className="blur-btn" onClick={() => setVideoCheck(false)}>
           Image
         </button>
@@ -32,7 +31,7 @@ function App() {
         <>{blurCheck ? <BlurVideoBackground /> : <ChangeVideoBackground />}</>
       ) : (
         <>{blurCheck ? <BlurImageBackground /> : <ChangeImageBackground />}</>
-      )} */}
+      )}
     </div>
   );
 }
