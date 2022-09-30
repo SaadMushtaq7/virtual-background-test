@@ -45,6 +45,7 @@ const ChangeVideoBackground = () => {
 
     contextRef.current.filter = "none";
     contextRef.current.globalCompositeOperation = "destination-over";
+
     contextRef.current.drawImage(results.image, 0, 0, 0, 0);
     inputVideoRef.current.hidden = true;
     contextRef.current.restore();
@@ -100,11 +101,11 @@ const ChangeVideoBackground = () => {
             right: 0,
             textAlign: "center",
             zIndex: 9,
-            width: 400,
-            height: 380,
+            width: 600,
+            height: 400,
           }}
-          width={400}
-          height={300}
+          width={600}
+          height={400}
         />
         <canvas
           ref={canvasRef}
@@ -116,11 +117,11 @@ const ChangeVideoBackground = () => {
             right: 0,
             textAlign: "center",
             zIndex: 9,
-            width: 400,
-            height: 380,
+            width: 600,
+            height: 400,
           }}
-          width={400}
-          height={300}
+          width={600}
+          height={400}
         />
       </div>
 

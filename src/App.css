@@ -108,8 +108,8 @@
 .change-video-background-webcam {
   position: absolute;
   
-  top: 280px;
-  left: 570px;
+  top: 275px;
+  left: 460px;
   z-index: 3000;
   
   width: 400px;

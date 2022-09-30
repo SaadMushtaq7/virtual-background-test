@@ -4,6 +4,7 @@ import "@tensorflow/tfjs-converter";
 import "@tensorflow/tfjs-backend-webgl";
 import { SelfieSegmentation } from "@mediapipe/selfie_segmentation";
 import { Camera } from "@mediapipe/camera_utils";
+import background from "../../background.jpg";
 import "../../App.css";
 
 const BlurVideoBackground = () => {
@@ -117,7 +118,7 @@ const BlurVideoBackground = () => {
             height: 380,
           }}
           width={400}
-          height={300}
+          height={380}
         />
       </div>
     </div>
