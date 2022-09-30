@@ -4,7 +4,6 @@ import "@tensorflow/tfjs-converter";
 import "@tensorflow/tfjs-backend-webgl";
 import { SelfieSegmentation } from "@mediapipe/selfie_segmentation";
 import { Camera } from "@mediapipe/camera_utils";
-import background from "../../background.jpg";
 import "../../App.css";
 
 const BlurVideoBackground = () => {
