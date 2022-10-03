@@ -9,6 +9,9 @@ import natureBackground from "../../natureBackground.jpg";
 import "../../App.css";
 
 const ChangeVideoBackground = () => {
+  const WIDTHDEF = 400;
+  const HEIGHTDEF = 320;
+
   const inputVideoRef = useRef<any>();
   const canvasRef = useRef<any>();
   const contextRef = useRef<any>();
@@ -52,9 +55,10 @@ const ChangeVideoBackground = () => {
   }, []);
 
   useEffect(() => {
+    console.log(canvasRef.current.width);
     contextRef.current = canvasRef.current.getContext("2d");
     const constraints = {
-      video: { width: { min: 400 }, height: { min: 380 } },
+      video: { width: WIDTHDEF, height: HEIGHTDEF },
     };
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
       inputVideoRef.current.srcObject = stream;
@@ -75,68 +79,51 @@ const ChangeVideoBackground = () => {
       onFrame: async () => {
         await selfieSegmentation.send({ image: inputVideoRef.current });
       },
-      width: 400,
-      height: 380,
+      width: 5000,
+      height: 7500,
     });
 
     camera.start();
   }, [onResults]);
-
+  //https://virtual-background-test.web.app/
   return (
-    <div className="change-video-backgroung-container">
-      <h1 className="text-center">Change Video Background</h1>
-      <img
-        className="background-image"
-        src={backgroundImage}
-        alt="background"
-      />
-      <div className="change-video-background-webcam">
+    <div className="flex flex-col justify-center items-center sm:w-full md:w-full my-6">
+      <h1 className="text-2xl text-bold text-center text-blue-500 mb-4">
+        Change Video Background
+      </h1>
+
+      <div className="flex flex-col justify-items-center top-80">
+        <img
+          className="background-image"
+          src={backgroundImage}
+          alt="background"
+        />
         <video
           ref={inputVideoRef}
-          style={{
-            position: "absolute",
-            marginLeft: "auto",
-            marginRight: "auto",
-            left: 0,
-            right: 0,
-            textAlign: "center",
-            zIndex: 9,
-            width: 600,
-            height: 400,
-          }}
-          width={600}
-          height={400}
+          className="virtual-bg-result-bg"
+          width={WIDTHDEF}
+          height={HEIGHTDEF}
         />
         <canvas
           ref={canvasRef}
-          style={{
-            position: "absolute",
-            marginLeft: "auto",
-            marginRight: "auto",
-            left: 0,
-            right: 0,
-            textAlign: "center",
-            zIndex: 9,
-            width: 600,
-            height: 400,
-          }}
-          width={600}
-          height={400}
+          className="virtual-bg-result-change-bg"
+          width={WIDTHDEF}
+          height={HEIGHTDEF}
         />
       </div>
 
-      <div className="image-options-row-video">
+      <div className="flex flex-row mt-8">
         <div
-          className="column-option"
+          className="w-36 h-36 mr-4"
           onClick={() => setBackgroundImage(background)}
         >
-          <img src={background} alt="city wall" style={{ width: "100%" }} />
+          <img src={background} alt="city wall" />
         </div>
         <div
-          className="column-option"
+          className="w-36 h-36 ml-4"
           onClick={() => setBackgroundImage(natureBackground)}
         >
-          <img src={natureBackground} alt="nature" style={{ width: "100%" }} />
+          <img src={natureBackground} alt="nature" />
         </div>
       </div>
     </div>

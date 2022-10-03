@@ -3,9 +3,9 @@ import "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-converter";
 import "@tensorflow/tfjs-backend-webgl";
 import * as bodyPix from "@tensorflow-models/body-pix";
-import background from "../../background.jpg";
-import natureBackground from "../../natureBackground.jpg";
-import "../../App.css";
+// import background from "../../background.jpg";
+// import natureBackground from "../../natureBackground.jpg";
+// import "../../App.css";
 
 const ChangeImageBackground = () => {
   const [image, setImage] = useState<any>();
@@ -14,7 +14,7 @@ const ChangeImageBackground = () => {
 
   const canvasRef = useRef<any>();
 
-  const [backgroundImage, setBackgroundImage] = useState<string>(background);
+  //const [backgroundImage, setBackgroundImage] = useState<string>(background);
 
   const handleImageChange = (e: any) => {
     setImage(URL.createObjectURL(e.target.files[0]));
@@ -93,7 +93,7 @@ const ChangeImageBackground = () => {
 
   return (
     <div className="container">
-      <h1 className="text-center">Change Image Background</h1>
+      {/* <h1 className="text-center">Change Image Background</h1>
 
       <div className="form-group">
         <input
@@ -130,7 +130,7 @@ const ChangeImageBackground = () => {
         >
           <img src={natureBackground} alt="nature" style={{ width: "100%" }} />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

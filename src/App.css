@@ -1,117 +1,76 @@
-.App {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.blurred-img-container{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.upload-image{
-  width: 600px;
-  height: 450px;
-  margin-top: 50px;
-  margin-left: 31%;
-  border-radius: 20px;
-  box-shadow: 1px 1px 1px 1px;
-  
-}
-
-.blur-btn{
-  width: 150px;
-  height: 75px;
-  outline: none;
-  border: none;
-  border-radius: 10px;
-  background-color: #20dbc2;
-  color: white;
-  text-transform: uppercase;
-  font-weight: 600;
-  margin: 10px 0;
-  margin-right: 15px;
-  transition: all 0.5s;
-  align-items: center;
-}
-
-.blur-btn:hover{
-  background-color: #00bfa6;
-  color: #fff;
-}
-
-.change-image-container{
-  margin-top: 20px;
-  width: 100%;
-}
-
-.remove-image-background{
-  position: absolute;
-  top: 450px;
-  left: 600px;
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.2));
-  width: 300px;
-  height: 200px;
-  z-index: 1000;
-}
-
-.hide-remove-background-image{
-  position: absolute;
-  display: none;
-}
-
 .background-image{
   position: relative;
   top: 0;
   left: 0;
-  width: 600px;
-  height: 400px;
+  width: 750px;
+  height: 500px;
 }
 
-.image-options-row{
-  display: flex;
-  flex-direction: row;
-  margin-top: 50px;
-}
+ @media only screen and (max-width: 480px) {
+  .background-image {
+    width: 400px;
+    height: 320px;
+  }
+} 
 
-.image-options-row-video{
-  display: flex;
-  flex-direction: row;
-  margin-top: 100px;
-}
-.image-options-row .column-option,
-.image-options-row-video .column-option{
-  width: 150px;
-  height: 150px;
-  margin-left: 50px;
-}
-
-.image-options-row .column-option img,
-.image-options-row-video .column-option img{
-  border-radius: 10px;
-}
-
-.image-options-row .column-option:hover,
-.image-options-row-video .column-option:hover{
-  width: 175px;
-  height: 155px;
-  transition: all 0.03ms ease-in-out;
-}
-
-.change-video-background-container{
-  margin-top: 10px;
-}
-
-.change-video-background-webcam {
+.blur-bg-result-bg{
   position: absolute;
-  
-  top: 275px;
-  left: 460px;
-  z-index: 3000;
-  
-  width: 400px;
-  
+  left: 0;
+  right: 0;
+  text-align: "center";
+  z-index: 9;
+  width: 750px;
+  height: 500px;
+  display: "none";
+  visibility: hidden;
 }
+.blur-bg-result{
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-left: 25%;
+  text-align: "center";
+  z-index: 9;
+  width: 750px;
+  height: 500px;
+}
+
+@media only screen and (max-width: 480px) {
+  .blur-bg-result {
+    width: 375px;
+    height: 420px;
+    margin-left: 0;
+    padding-right: 0;
+  }
+} 
+
+.virtual-bg-result-bg{
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: "center";
+  z-index: 9;
+  width: 750px;
+  height: 500px;
+  display: "none";
+  visibility: hidden;
+}
+
+.virtual-bg-result-change-bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-left: 25%;
+  text-align: "center";
+  z-index: 9;
+  width: 750px;
+  height: 500px;
+}
+
+@media only screen and (max-width: 480px) {
+  .virtual-bg-result-change-bg {
+    width: 370px;
+    height: 320px;
+    margin-left: 0;
+  }
+} 

@@ -3,8 +3,8 @@ import "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-converter";
 import "@tensorflow/tfjs-backend-webgl";
 import * as bodyPix from "@tensorflow-models/body-pix";
-import loader from "../../loading.gif";
-import "../../App.css";
+//import loader from "../../loading.gif";
+//import "../../App.css";
 
 const BlurImageBackground = () => {
   const [image, setImage] = useState<any>();
@@ -63,7 +63,7 @@ const BlurImageBackground = () => {
           onChange={handleImageChange}
         />
       </div>
-      {imageProcessing === false && <img src={loader} alt="loader" />}
+      {/* {imageProcessing === false && <img src={loader} alt="loader" />} */}
       <img
         ref={imageRef}
         src={image}
