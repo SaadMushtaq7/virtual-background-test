@@ -9,11 +9,9 @@ import natureBackground from "../../natureBackground.jpg";
 import "../../App.css";
 
 const ChangeVideoBackground = () => {
-  const WIDTHDEF = 400;
-  const HEIGHTDEF = 320;
-
   const inputVideoRef = useRef<any>();
   const canvasRef = useRef<any>();
+  const backgroundImageRef = useRef<any>();
   const contextRef = useRef<any>();
 
   const [backgroundImage, setBackgroundImage] = useState<any>(background);
@@ -48,17 +46,18 @@ const ChangeVideoBackground = () => {
 
     contextRef.current.filter = "none";
     contextRef.current.globalCompositeOperation = "destination-over";
+    contextRef.current.drawImage(backgroundImageRef.current, 0, 0, 300, 150);
 
-    contextRef.current.drawImage(results.image, 0, 0, 0, 0);
-    inputVideoRef.current.hidden = true;
     contextRef.current.restore();
   }, []);
 
   useEffect(() => {
-    console.log(canvasRef.current.width);
     contextRef.current = canvasRef.current.getContext("2d");
     const constraints = {
-      video: { width: WIDTHDEF, height: HEIGHTDEF },
+      video: {
+        width: canvasRef.current.width,
+        height: canvasRef.current.height,
+      },
     };
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
       inputVideoRef.current.srcObject = stream;
@@ -85,31 +84,22 @@ const ChangeVideoBackground = () => {
 
     camera.start();
   }, [onResults]);
-  //https://virtual-background-test.web.app/
+
   return (
-    <div className="flex flex-col justify-center items-center sm:w-full md:w-full my-6">
+    <div>
       <h1 className="text-2xl text-bold text-center text-blue-500 mb-4">
         Change Video Background
       </h1>
 
-      <div className="flex flex-col justify-items-center top-80">
+      <div className="flex relative flex-col justify-items-center">
         <img
+          ref={backgroundImageRef}
           className="background-image"
           src={backgroundImage}
           alt="background"
         />
-        <video
-          ref={inputVideoRef}
-          className="virtual-bg-result-bg"
-          width={WIDTHDEF}
-          height={HEIGHTDEF}
-        />
-        <canvas
-          ref={canvasRef}
-          className="virtual-bg-result-change-bg"
-          width={WIDTHDEF}
-          height={HEIGHTDEF}
-        />
+        <video ref={inputVideoRef} className="virtual-bg-result-bg" />
+        <canvas ref={canvasRef} className="virtual-bg-result" />
       </div>
 
       <div className="flex flex-row mt-8">

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-converter";
 import "@tensorflow/tfjs-backend-webgl";
@@ -10,18 +10,58 @@ const BlurVideoBackground = () => {
   const inputVideoRef = useRef<any>();
   const canvasRef = useRef<any>();
   const contextRef = useRef<any>();
-  const [WIDTHDEF, setWIDTHDEF] = useState<number>(750);
-  const [HEIGHTDEF, setHEIGHTDEF] = useState<number>(500);
+
+  const onResults = (results: any) => {
+    contextRef.current.save();
+
+    contextRef.current.clearRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+
+    contextRef.current.filter = "none";
+    contextRef.current.globalCompositeOperation = "source-over";
+    contextRef.current.drawImage(
+      results.segmentationMask,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+
+    contextRef.current.globalCompositeOperation = "source-in";
+    contextRef.current.drawImage(
+      results.image,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+
+    contextRef.current.filter = "blur(20px)";
+    contextRef.current.globalCompositeOperation = "destination-over";
+    contextRef.current.drawImage(
+      results.image,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+
+    contextRef.current.restore();
+  };
+
   useEffect(() => {
-    setWIDTHDEF(canvasRef.current.clientWidth);
-    setHEIGHTDEF(canvasRef.current.clientHeight);
     contextRef.current = canvasRef.current.getContext("2d");
     const constraints = {
       video: {
-        width: canvasRef.current.clientWidth,
-        height: canvasRef.current.clientHeight,
+        width: canvasRef.current.width,
+        height: canvasRef.current.height,
       },
     };
+
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
       inputVideoRef.current.srcObject = stream;
     });
@@ -41,53 +81,12 @@ const BlurVideoBackground = () => {
       onFrame: async () => {
         await selfieSegmentation.send({ image: inputVideoRef.current });
       },
-      width: canvasRef.current.clientWidth,
-      height: canvasRef.current.clientHeight,
+      width: canvasRef.current.width,
+      height: canvasRef.current.height,
     });
 
     camera.start();
-  }, [WIDTHDEF]);
-
-  const onResults = (results: any) => {
-    contextRef.current.save();
-
-    contextRef.current.clearRect(
-      0,
-      0,
-      canvasRef.current.clientWidth,
-      canvasRef.current.clientHeight
-    );
-
-    contextRef.current.filter = "none";
-    contextRef.current.globalCompositeOperation = "source-over";
-    contextRef.current.drawImage(
-      results.segmentationMask,
-      0,
-      0,
-      canvasRef.current.clientWidth,
-      canvasRef.current.clientHeight
-    );
-
-    contextRef.current.globalCompositeOperation = "source-in";
-    contextRef.current.drawImage(
-      results.image,
-      0,
-      0,
-      canvasRef.current.clientWidth,
-      canvasRef.current.clientHeight
-    );
-    contextRef.current.filter = "blur(20px)";
-    contextRef.current.globalCompositeOperation = "destination-over";
-    contextRef.current.drawImage(
-      results.image,
-      0,
-      0,
-      canvasRef.current.clientWidth,
-      canvasRef.current.clientHeight
-    );
-
-    contextRef.current.restore();
-  };
+  }, []);
 
   return (
     <div>
@@ -95,19 +94,9 @@ const BlurVideoBackground = () => {
         Blur Video Background
       </h1>
 
-      <div className="blur-result-container">
-        <video
-          ref={inputVideoRef}
-          className="blur-bg-result-bg"
-          width={WIDTHDEF}
-          height={HEIGHTDEF}
-        />
-        <canvas
-          ref={canvasRef}
-          className="blur-bg-result"
-          width={WIDTHDEF}
-          height={HEIGHTDEF}
-        />
+      <div>
+        <video ref={inputVideoRef} className="blur-bg-result-bg" />
+        <canvas ref={canvasRef} className="blur-bg-result" />
       </div>
     </div>
   );
